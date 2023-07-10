@@ -9,7 +9,7 @@ namespace Interface
         {
             builder.Services.AddScoped<IBeerService, BeerService>();
             builder.Services.AddScoped<ICustomAuthenticationService, AuthenticationService>();
-            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IUserService, UserService>();
         }
     }
 }
