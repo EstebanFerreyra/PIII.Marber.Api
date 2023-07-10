@@ -10,6 +10,7 @@ namespace Interface
             builder.Services.AddScoped<IBeerService, BeerService>();
             builder.Services.AddScoped<ICustomAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
         }
     }
 }
