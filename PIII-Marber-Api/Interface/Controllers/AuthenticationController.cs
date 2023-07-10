@@ -24,8 +24,8 @@ namespace Interface.Controllers
             this._authenticationService = authenticationService;
         }
 
-        [HttpPost("Authenticate")] 
-        public ActionResult<string> Autenticar(CredentialsViewModel credentialsViewModel) 
+        [HttpPost("Authenticate")]
+        public ActionResult<string> Autenticar(CredentialsViewModel credentialsViewModel)
         {
             //Paso 1: Validamos las credenciales
             var user = ValidateCredentials(credentialsViewModel); //Lo primero que hacemos es llamar a una función que valide los parámetros que enviamos.
@@ -38,12 +38,26 @@ namespace Interface.Controllers
 
             var credentials = new SigningCredentials(securityPassword, SecurityAlgorithms.HmacSha256);
 
+            var role = "";
+            if (user.IdRole == 1)
+            {
+                role = "client";
+            }
+            else if (user.IdRole == 2)
+            {
+                role = "admin";
+            }
+            else
+            {
+                role = "superadmin";
+            }
+
             //Los claims son datos en clave->valor que nos permite guardar data del usuario.
             var claimsForToken = new List<Claim>();
             claimsForToken.Add(new Claim("sub", user.Id.ToString())); //"sub" es una key estándar que significa unique user identifier, es decir, si mandamos el id del usuario por convención lo hacemos con la key "sub".
             claimsForToken.Add(new Claim("given_name", user.UserName)); //Lo mismo para given_name y family_name, son las convenciones para nombre y apellido. Ustedes pueden usar lo que quieran, pero si alguien que no conoce la app
             claimsForToken.Add(new Claim("email", user.UserEmail)); //quiere usar la API por lo general lo que espera es que se estén usando estas keys.
-            //claimsForToken.Add(new Claim("role", user.IdRole ?? "client")); //Debería venir del usuario
+            claimsForToken.Add(new Claim("role", role)); //Debería venir del usuario
 
             var jwtSecurityToken = new JwtSecurityToken( //agregar using System.IdentityModel.Tokens.Jwt; Acá es donde se crea el token con toda la data que le pasamos antes.
               _config["Authentication:Issuer"],

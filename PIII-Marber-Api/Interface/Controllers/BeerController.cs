@@ -6,11 +6,13 @@ using Models.Models;
 using Models.ViewModel;
 using Services.IServices;
 using Services.Services;
+using System.Security.Claims;
 
 namespace Interface.Controllers
 {
+    [ApiController]
     [Route("Marber/BeerController")]
-    public class BeerController : Controller
+    public class BeerController : ControllerBase
     {
         private readonly IBeerService _beerService;
         private readonly ILogger<BeerController> _logger;
@@ -21,7 +23,7 @@ namespace Interface.Controllers
             _logger = logger;
         }
 
-        [Authorize]
+        
         [HttpGet("GetBeers")]
         public ActionResult<List<BeerDTO>> GetBeers()
         {
@@ -64,10 +66,14 @@ namespace Interface.Controllers
             }
         }
 
-        [Authorize]
         [HttpPut("ModifyPriceBeerById/{id}")]
         public ActionResult<string> ModifyPriceBeerById(int id, [FromBody] decimal newPrice)
         {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "client")
+            {
+                return Forbid();
+            }
+
             try
             {
                 if (_beerService.ModifyPriceBeerById(id, newPrice) == true)
@@ -86,18 +92,23 @@ namespace Interface.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost("AddBeer")]
         public ActionResult<string> AddBeer([FromBody] AddBeerViewModel addBeerViewModel)
         {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "client")
+            {
+                return Forbid();
+            }
+
             try
             {
-                if (_beerService.AddBeer(addBeerViewModel) != null)
+                var response = _beerService.AddBeer(addBeerViewModel);
+                if (response != null)
                 {
                     string baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
                     string apiAndEndpointUrl = $"Marber/BeerController/GetBeerById";
-                    string locationUrl = $"{baseUrl}/{apiAndEndpointUrl}?id={_beerService.AddBeer(addBeerViewModel).Id}";
-                    return Created(locationUrl, _beerService.AddBeer(addBeerViewModel));
+                    string locationUrl = $"{baseUrl}/{apiAndEndpointUrl}?id={response.Id}";
+                    return Created(locationUrl, response);
                 } 
                 else
                 {
@@ -111,10 +122,14 @@ namespace Interface.Controllers
             }
         }
 
-        [Authorize]
         [HttpDelete("DeleteBeerById/{id}")]
         public ActionResult<string> DeleteBeerById(int id)
         {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "client")
+            {
+                return Forbid();
+            }
+
             try
             {
                 if (_beerService.DeleteBeerById(id) == true)

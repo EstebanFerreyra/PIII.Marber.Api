@@ -15,6 +15,8 @@ namespace Services.Mappings
             var mapperConfiguration = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<BeerProfile>();
+                cfg.AddProfile<UserProfile>();
+                //cfg.AddProfile<UserProfile>();
             });
 
             IMapper mapper = mapperConfiguration.CreateMapper();

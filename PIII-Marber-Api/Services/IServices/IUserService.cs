@@ -15,5 +15,6 @@ namespace Services.IServices
         UserDTO AddUser(UserViewModel user);
         UserDTO UpdateUser(UserViewModel user);
         bool DeleteUser(int id);
+
     }
 }

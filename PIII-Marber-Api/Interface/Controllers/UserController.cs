@@ -4,6 +4,7 @@ using Models.Models;
 using Models.ViewModel;
 using Services.IServices;
 using Services.Services;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Interface.Controllers
@@ -21,10 +22,14 @@ namespace Interface.Controllers
             _logger = logger;
         }
 
-
         [HttpGet("GetUsers")]
         public ActionResult<List<UserDTO>> GetUsers()
         {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "client")
+            {
+                return Forbid();
+            }
+
             try
             {
                 if (_service.GetUsers() != null)
@@ -38,7 +43,6 @@ namespace Interface.Controllers
             }
             catch (Exception ex)
             {
-
                 _logger.LogError($"Ocurrio un error en el controlador GetUsers: {ex.Message}");
                 return BadRequest($"Error al intentar eliminar usuario. Error: {ex.Message}");
             }
@@ -47,6 +51,11 @@ namespace Interface.Controllers
         [HttpGet("GetUserById/{id}")]
         public ActionResult<UserDTO> GetUserById(int id)
         {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "client")
+            {
+                return Forbid();
+            }
+
             try
             {
                 if (_service.GetUserById(id) != null)
@@ -68,14 +77,20 @@ namespace Interface.Controllers
         [HttpPost("AddUser")]
         public ActionResult<UserDTO> AddUser([FromBody] UserViewModel user)
         {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superdmin")
+            {
+                return Forbid();
+            }
+
             try
             {
-                if (_service.AddUser(user) != null)
+                var response = _service.AddUser(user);
+                if (response != null)
                 {
                     string baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
                     string apiAndEndpointUrl = $"interface/Users/GetUserById";
-                    string localtionUrl = $"{baseUrl}/{apiAndEndpointUrl}/{_service.AddUser(user).Id}";
-                    return Created(localtionUrl, _service.AddUser(user));
+                    string localtionUrl = $"{baseUrl}/{apiAndEndpointUrl}/{response.Id}";
+                    return Created(localtionUrl, response);
                 }
                 else
                 {
@@ -92,6 +107,11 @@ namespace Interface.Controllers
         [HttpPut("UpdateUser")]
         public ActionResult<UserDTO> UpdateUser([FromBody] UserViewModel user)
         {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superdmin")
+            {
+                return Forbid();
+            }
+
             try
             {
                 if (_service.UpdateUser(user) != null)
@@ -116,6 +136,11 @@ namespace Interface.Controllers
         [HttpDelete("DeleteUser/{id}")]
         public ActionResult<string> DeleteUser(int id)
         {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superdmin")
+            {
+                return Forbid();
+            }
+
             try
             {
                 if (_service.DeleteUser(id) == true)
