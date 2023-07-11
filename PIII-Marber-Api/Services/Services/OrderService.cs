@@ -27,7 +27,17 @@ namespace Services.Services
 
         public List<OrderDTO> GetOrders()
         {
-            throw new NotImplementedException();
+            var ordersList = new List<OrderDTO>();
+            foreach (var order in _dbContext.Orders) {
+                ordersList.Add(new OrderDTO
+                {
+                    //IdUser = order.IdUser,
+                    //IdBeer = order.IdBeer,   
+                    Quantity = order.Quantity,
+                    SubTotal = order.SubTotal * order.Quantity,
+                });
+                };
+            return ordersList;
         }
 
         public bool AddOrder(int id, List<OrderViewModel> orders, int userId)
