@@ -39,6 +39,11 @@ namespace Services.Mappings.Profiles
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.UserEmail))
                 .ForMember(dest => dest.UserPassword, opt => opt.MapFrom(src => src.UserPassword));
+
+            //CreateMap<Orders, UserDTO>()
+            //    .ForMember(dest => dest.IdUser, opt => opt.MapFrom(src => src.UserName))
+            //    .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.UserEmail))
+            //    .ForMember(dest => dest.UserPassword, opt => opt.MapFrom(src => src.UserPassword));
         }
     }
 }

@@ -77,7 +77,7 @@ namespace Interface.Controllers
         [HttpPost("AddUser")]
         public ActionResult<UserDTO> AddUser([FromBody] UserViewModel user)
         {
-            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superdmin")
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superadmin")
             {
                 return Forbid();
             }
@@ -107,7 +107,7 @@ namespace Interface.Controllers
         [HttpPut("UpdateUser")]
         public ActionResult<UserDTO> UpdateUser([FromBody] UserViewModel user)
         {
-            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superdmin")
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superadmin")
             {
                 return Forbid();
             }
@@ -136,7 +136,7 @@ namespace Interface.Controllers
         [HttpDelete("DeleteUser/{id}")]
         public ActionResult<string> DeleteUser(int id)
         {
-            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superdmin")
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superadmin")
             {
                 return Forbid();
             }

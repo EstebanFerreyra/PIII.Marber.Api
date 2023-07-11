@@ -2,6 +2,7 @@
 using Models.DTO;
 using Models.Models;
 using Services.IServices;
+using System.Security.Claims;
 
 namespace Interface.Controllers
 {
@@ -18,38 +19,58 @@ namespace Interface.Controllers
             _logger = logger;
         }
 
-        [HttpGet("topSoldBeers")]
+        [HttpGet("topBeers")]
         public ActionResult<List<SalesDTO>> GetTopSoldProducts()
         {
-            var topSoldProducts = _dbContext.Orders
+            var topSoldBeers = _dbContext.Orders
                 .GroupBy(o => o.IdBeer)
                 .Select(g => new
                 {
-                    TotalQuantitySold = g.Sum(o => o.Quantity)
+                    TotalSold = g.Sum(o => o.Quantity)
                 })
-                .OrderByDescending(p => p.TotalQuantitySold)
+                .OrderByDescending(p => p.TotalSold)
                 .Take(3)
-                .Join(_dbContext.Orders, p => p.TotalQuantitySold, pr => pr.IdBeer, (p, pr) => pr)
+                .Join(_dbContext.Orders, p => p.TotalSold, pr => pr.IdBeer, (p, pr) => pr)
                 .ToList();
 
-            return Ok(topSoldProducts);
+            return Ok(topSoldBeers);
         }
 
         [HttpGet("topBuyers")]
         public ActionResult<List<UserDTO>> GetBuyers()
         {
-            var usualClients = _dbContext.Orders
-                .GroupBy(o => o.IdUser)
-                .Select(g => new
-                {
-                    TotalBuys = g.Sum(o => o.Quantity)
-                })
-                .OrderByDescending(p => p.TotalBuys)
-                .Take(3)
-                .Join(_dbContext.Orders, p => p.TotalBuys, pr => pr.IdUser, (p, pr) => pr)
-                .ToList();
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superadmin")
+            {
+                return Forbid();
+            }
 
-            return Ok(usualClients);
+            try
+            {
+                if (_dbContext.Orders != null)
+                {
+                    var usualClients = _dbContext.Orders
+                        .GroupBy(o => o.IdUser)
+                        .Select(g => new
+                        {
+                            TotalBuys = g.Sum(o => o.Quantity)
+                        })
+                        .OrderByDescending(p => p.TotalBuys)
+                        .Take(3)
+                        .Join(_dbContext.Orders, p => p.TotalBuys, pr => pr.IdUser, (p, pr) => pr)
+                        .ToList();
+
+                    return Ok(usualClients); 
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ocurrio un error en el controlador TopSales: {ex.Message}");
+                return BadRequest($"Error al intentar mostrar compradores frecuentes. Error: {ex.Message}");
+            }
         }
     }
 }
