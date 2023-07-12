@@ -8,6 +8,7 @@ namespace Models.DTO
 {
     public class OrderDTO
     {
+        public int Id { get; set; }
         public string UserName { get; set; }
         public string BeerName { get; set; }
         public int Quantity { get; set; }

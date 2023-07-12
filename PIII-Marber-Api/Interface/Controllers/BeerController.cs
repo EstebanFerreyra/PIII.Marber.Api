@@ -66,6 +66,7 @@ namespace Interface.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("ModifyPriceBeerById/{id}")]
         public ActionResult<string> ModifyPriceBeerById(int id, [FromBody] decimal newPrice)
         {
@@ -92,6 +93,7 @@ namespace Interface.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("AddBeer")]
         public ActionResult<string> AddBeer([FromBody] AddBeerViewModel addBeerViewModel)
         {
@@ -122,6 +124,7 @@ namespace Interface.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("DeleteBeerById/{id}")]
         public ActionResult<string> DeleteBeerById(int id)
         {

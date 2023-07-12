@@ -11,5 +11,6 @@ namespace Services.IServices
     public interface ICustomAuthenticationService
     {
         Users? ValidateUser(CredentialsViewModel credentialsViewModel);
+        string ValidateRole(int id);
     }
 }

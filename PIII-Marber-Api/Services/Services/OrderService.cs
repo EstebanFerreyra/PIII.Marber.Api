@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Models.DTO;
 using Models.Models;
@@ -28,14 +30,15 @@ namespace Services.Services
         public List<OrderDTO> GetOrders()
         {
             var ordersList = new List<OrderDTO>();
-            foreach (var order in _dbContext.Orders) {
+            foreach (var order in _dbContext.Orders.ToList()) {
                 ordersList.Add(new OrderDTO
                 {
-                    //IdUser = order.IdUser,
-                    //IdBeer = order.IdBeer,   
+                    Id = order.Id,
+                    UserName = _dbContext.Users.Where(w => w.Id == order.IdUser).FirstOrDefault().UserName,
+                    BeerName = _dbContext.Beer.Where(w => w.Id == order.IdBeer).FirstOrDefault().BeerName,
                     Quantity = order.Quantity,
                     SubTotal = order.SubTotal * order.Quantity,
-                });
+                }); 
                 };
             return ordersList;
         }
@@ -65,19 +68,31 @@ namespace Services.Services
             }
         }
 
-
-        //    public (int idOrder, List<int> products, int userId)
-        //    {
-
-        //        foreach (var item in products){
-        //        contexto.Order.Add(new Orders{
-        //            id = idOrder,
-        //            idprod = item.idprod,
-        //            qu = item.quantit,
-        //            subt = item.price
-        //})
-        //        }
-
-        //    }    
+        public bool DeleteOrderById(int id)
+        {
+            try
+            {
+                var listToDelete = new List<Orders>();
+                listToDelete = _dbContext.Orders.Where(w => w.Id == id).ToList();
+                if (listToDelete.Count > 0)
+                {
+                    foreach (var order in listToDelete)
+                    {
+                        _dbContext.Orders.Remove(order);
+                    }
+                    _dbContext.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception exe)
+            {
+                string error = exe.Message;
+                return false;
+            }
+        }
     }
 }

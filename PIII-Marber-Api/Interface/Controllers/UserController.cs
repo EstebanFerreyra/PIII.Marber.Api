@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 using Models.Models;
 using Models.ViewModel;
@@ -22,6 +23,7 @@ namespace Interface.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet("GetUsers")]
         public ActionResult<List<UserDTO>> GetUsers()
         {
@@ -48,6 +50,7 @@ namespace Interface.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("GetUserById/{id}")]
         public ActionResult<UserDTO> GetUserById(int id)
         {
@@ -74,13 +77,14 @@ namespace Interface.Controllers
             }
         }
 
+        //[Authorize]
         [HttpPost("AddUser")]
         public ActionResult<UserDTO> AddUser([FromBody] UserViewModel user)
         {
-            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superadmin")
-            {
-                return Forbid();
-            }
+            //if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superadmin")
+            //{
+            //    return Forbid();
+            //}
 
             try
             {
@@ -104,6 +108,7 @@ namespace Interface.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("UpdateUser")]
         public ActionResult<UserDTO> UpdateUser([FromBody] UserViewModel user)
         {
@@ -133,6 +138,7 @@ namespace Interface.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("DeleteUser/{id}")]
         public ActionResult<string> DeleteUser(int id)
         {

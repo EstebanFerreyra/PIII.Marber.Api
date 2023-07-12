@@ -21,7 +21,7 @@ namespace Interface.Controllers
         public AuthenticationController(IConfiguration config, ICustomAuthenticationService authenticationService)
         {
             _config = config;
-            this._authenticationService = authenticationService;
+            _authenticationService = authenticationService;
         }
 
         [HttpPost("Authenticate")]
@@ -38,19 +38,8 @@ namespace Interface.Controllers
 
             var credentials = new SigningCredentials(securityPassword, SecurityAlgorithms.HmacSha256);
 
-            var role = "";
-            if (user.IdRole == 1)
-            {
-                role = "client";
-            }
-            else if (user.IdRole == 2)
-            {
-                role = "admin";
-            }
-            else
-            {
-                role = "superadmin";
-            }
+            // validamos el rol de usuario antes encontrado
+            var role = _authenticationService.ValidateRole(user.IdRole);
 
             //Los claims son datos en clave->valor que nos permite guardar data del usuario.
             var claimsForToken = new List<Claim>();
