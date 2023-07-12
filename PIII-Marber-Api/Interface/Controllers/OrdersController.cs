@@ -72,5 +72,31 @@ namespace Interface.Controllers
                 return BadRequest($"Error al agregar ordenes. Error: {exe.Message}");
             }
         }
+
+        [HttpDelete("DeleteOrder/{id}")]
+        public ActionResult<string> DeleteOrder(int id)
+        {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "client")
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                if (_service.DeleteOrderById(id) == true)
+                {
+                    return Ok("Orden eliminada con exito");
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception exe)
+            {
+                _logger.LogError($"Ocurrio un error en el controlador OrdersController: {exe.Message}");
+                return BadRequest($"Error al eliminar ordenes. Error: {exe.Message}");
+            }
+        }
     }
 }

@@ -12,5 +12,7 @@ namespace Services.IServices
     {
         List<OrderDTO> GetOrders();
         bool AddOrder(int id, List<OrderViewModel> orders, int userId);
+        bool DeleteOrderById(int id);
+
     }
 }

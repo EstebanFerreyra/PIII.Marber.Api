@@ -22,5 +22,10 @@ namespace Services.Services
         {
             return _dbContext.Users.FirstOrDefault(f => f.UserName == credentialsViewModel.UserName && f.UserPassword == credentialsViewModel.UserPassword);
         }
+
+        public string? ValidateRole(int id)
+        {
+            return _dbContext.Roles.FirstOrDefault(f => f.Id == id).UserRole;
+        }
     }
 }
