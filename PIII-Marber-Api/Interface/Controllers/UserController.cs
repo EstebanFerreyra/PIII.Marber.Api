@@ -104,7 +104,7 @@ namespace Interface.Controllers
 
         [Authorize]
         [HttpPut("UpdateUser")]
-        public ActionResult<UserDTO> UpdateUser([FromBody] UserViewModel user)
+        public ActionResult<UserDTO> UpdateUser([FromBody] ModifyUserViewModel user)
         {
             if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superadmin")
             {
@@ -168,7 +168,7 @@ namespace Interface.Controllers
             }
             catch (Exception exe)
             {
-                _logger.LogError($"Ocurrio un error en el controlador ModifyPassword: {exe.Message}");
+                _logger.LogError($"Ocurrió un error en el controlador ModifyPassword: {exe.Message}");
                 return BadRequest($"Error al modificar datos del usuario. Error: {exe.Message}");
             }
         }
@@ -186,7 +186,7 @@ namespace Interface.Controllers
             {
                 if (_service.DeleteUser(id) == true)
                 {
-                    return Ok();
+                    return Ok("Usuario eliminado con éxito.");
                 }
                 else
                 {
@@ -195,8 +195,8 @@ namespace Interface.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Ocurrio un error en el controlador DeleteUser: {ex.Message}");
-                return BadRequest($"Error al intentar borrar un usuario con id {id}. Error: {ex.Message}");
+                _logger.LogError($"Ocurrió un error en el controlador DeleteUser: {ex.Message}");
+                return BadRequest($"Error al intentar borrar usuario con id {id}. Error: {ex.Message}");
             }
         }
     }

@@ -39,6 +39,10 @@ namespace Services.Mappings.Profiles
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.UserEmail))
                 .ForMember(dest => dest.UserPassword, opt => opt.MapFrom(src => src.UserPassword));
+
+            CreateMap<ModifyUserViewModel, UserDTO>()
+                .ForMember(dest => dest.IdRole, opt => opt.MapFrom(src => src.IdRole))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName));
         }
     }
 }
