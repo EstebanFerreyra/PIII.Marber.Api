@@ -70,16 +70,13 @@ namespace Services.Services
             }
         }
 
-        public UserDTO UpdateUser(UserViewModel user)
+        public UserDTO UpdateUser(ModifyUserViewModel user)
         {
             try
             {
                 Users userDB = _dbContext.Users.Single(i => i.Id == user.Id);
                 userDB.IdRole = _dbContext.Roles.First(r => r.Id == user.IdRole).Id;
                 userDB.UserName = user.UserName;
-                userDB.UserEmail = user.UserEmail;
-                userDB.UserPassword = user.UserPassword;
-                //_dbContext.Users.Add(_mapper.Map<Users>(user));
                 _dbContext.SaveChanges();
                 return _mapper.Map<UserDTO>(_dbContext.Users.FirstOrDefault(f => f.Id == userDB.Id));
             }
@@ -87,6 +84,48 @@ namespace Services.Services
             {
                 string error = exe.Message;
                 return null;
+            }
+        }
+
+        public bool ModifyUserName(int id, string newUserName)
+        {
+            try
+            {
+                foreach (Users userDB in _dbContext.Users.ToList())
+                {
+                    if (userDB.Id == id)
+                    {
+                        userDB.UserName = newUserName;
+                    }
+                }
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception exe)
+            {
+                string error = exe.Message;
+                return false;
+            } 
+        }
+
+        public bool ModifyPassword(int id, string newPassword)
+        {
+            try
+            {
+                foreach (Users userDB in _dbContext.Users.ToList())
+                {
+                    if (userDB.Id == id)
+                    {
+                        userDB.UserPassword = newPassword;
+                    }
+                }
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception exe)
+            {
+                string error = exe.Message;
+                return false;
             }
         }
 

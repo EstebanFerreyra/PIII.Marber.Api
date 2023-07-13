@@ -14,4 +14,11 @@ namespace Models.ViewModel
         public string UserEmail { get; set; } = string.Empty;
         public string UserPassword { get; set; } = string.Empty;
     }
+
+    public class ModifyUserViewModel
+    {
+        public int Id { get; set; }
+        public int IdRole { get; set; }
+        public string UserName { get; set; } = string.Empty;
+    }
 }
