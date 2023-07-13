@@ -130,6 +130,50 @@ namespace Interface.Controllers
         }
 
         [Authorize]
+        [HttpPatch("ChangeUsername")]
+        public ActionResult<string> ModifyUserName(int id, [FromBody] string newUserName) 
+        {
+            try
+            {
+                if (_service.ModifyUserName(id, newUserName) == true)
+                {
+                    return Ok("Usuario modificado con éxito.");
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception exe)
+            {
+                _logger.LogError($"Ocurrio un error en el controlador ModifyUserName: {exe.Message}");
+                return BadRequest($"Error al modificar datos del usuario. Error: {exe.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpPatch("ChangePassword")]
+        public ActionResult<string> ModifyPassword(int id, [FromBody] string newPassword)
+        {
+            try
+            {
+                if (_service.ModifyPassword(id, newPassword) == true)
+                {
+                    return Ok("Contraseña modificada con éxito.");
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception exe)
+            {
+                _logger.LogError($"Ocurrio un error en el controlador ModifyPassword: {exe.Message}");
+                return BadRequest($"Error al modificar datos del usuario. Error: {exe.Message}");
+            }
+        }
+
+        [Authorize]
         [HttpDelete("DeleteUser/{id}")]
         public ActionResult<string> DeleteUser(int id)
         {

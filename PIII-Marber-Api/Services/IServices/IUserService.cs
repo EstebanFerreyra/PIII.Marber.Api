@@ -14,6 +14,8 @@ namespace Services.IServices
         UserDTO GetUserById(int id);
         UserDTO AddUser(UserViewModel user);
         UserDTO UpdateUser(UserViewModel user);
+        bool ModifyUserName(int id, string newUserName);
+        bool ModifyPassword(int id, string newPassword);
         bool DeleteUser(int id);
 
     }
