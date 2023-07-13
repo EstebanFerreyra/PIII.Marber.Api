@@ -113,9 +113,10 @@ namespace Interface.Controllers
 
             try
             {
-                if (_service.UpdateUser(user) != null)
+                var response = _service.UpdateUser(user);
+                if (response != null)
                 {
-                    return Ok(_service.UpdateUser(user));
+                    return Ok(response);
                 }
                 else
                 {

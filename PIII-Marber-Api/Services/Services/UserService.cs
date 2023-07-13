@@ -91,6 +91,11 @@ namespace Services.Services
         {
             try
             {
+                if (_dbContext.Users.FirstOrDefault(f => f.Id == id) == null)
+                {
+                    return false;
+                }
+
                 foreach (Users userDB in _dbContext.Users.ToList())
                 {
                     if (userDB.Id == id)
@@ -112,6 +117,11 @@ namespace Services.Services
         {
             try
             {
+                if (_dbContext.Users.FirstOrDefault(f => f.Id == id) == null)
+                {
+                    return false;
+                }
+
                 foreach (Users userDB in _dbContext.Users.ToList())
                 {
                     if (userDB.Id == id)
