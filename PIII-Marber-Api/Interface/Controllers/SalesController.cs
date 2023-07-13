@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.DTO;
@@ -13,59 +14,38 @@ namespace Interface.Controllers
     [Route("Marber/SalesController")]
     public class SalesController : ControllerBase
     {
-        private readonly Marber_BBDDContext _dbContext;
         private readonly ILogger<SalesController> _logger;
-        private readonly IMapper _mapper;
+        private readonly ISalesService _salesService;
 
-        public SalesController(Marber_BBDDContext _context, ILogger<SalesController> logger)
+        public SalesController(ILogger<SalesController> logger, ISalesService salesService)
         {
-            _dbContext = _context;
             _logger = logger;
-            _mapper = AutoMapperConfig.Configure();
+            _salesService = salesService;
         }
 
         [HttpGet("topBeers")]
         public ActionResult<List<BeerDTO>> GetTopSoldProducts()
         {
-            var listProductAndQuantity = new List<IdProductsAndQuantitySoldDTO>();
-
-            foreach (var order in _dbContext.Orders.ToList())
+            try
             {
-                if (listProductAndQuantity.Where(w => w.IdBeer == order.IdBeer).FirstOrDefault() == null)
+                var response = _salesService.GetTopSoldProducts();
+                if (response != null)
                 {
-                    listProductAndQuantity.Add(new IdProductsAndQuantitySoldDTO
-                    {
-                        IdBeer = order.IdBeer,
-                        Quantity = order.Quantity
-                    });
+                    return Ok(response);
                 }
                 else
                 {
-                    foreach (var prod in listProductAndQuantity)
-                    {
-                        if (prod.IdBeer == order.IdBeer)
-                        {
-                            prod.Quantity += order.Quantity;
-                        }
-                    }
+                    throw new Exception();
                 }
             }
-
-            var topBeers = listProductAndQuantity
-                .OrderByDescending(q => q.Quantity)
-                .Take(3)
-                .ToList();
-
-            var list = new List<BeerDTO>();
-
-            foreach (var prod in topBeers)
+            catch (Exception exe)
             {
-                list.Add(_mapper.Map<BeerDTO>(_dbContext.Beer.Where(w => w.Id == prod.IdBeer).FirstOrDefault()));
+                _logger.LogError($"Ocurrio un error en el controlador SalesController: {exe.Message}");
+                return BadRequest($"Error al intentar ver las cervezas mas compradas. Error: {exe.Message}");
             }
-
-            return Ok(list);
         }
 
+        [Authorize]
         [HttpGet("topBuyers")]
         public ActionResult<List<UserDTO>> GetBuyers()
         {
@@ -76,30 +56,20 @@ namespace Interface.Controllers
 
             try
             {
-                if (_dbContext.Orders != null)
+                var response = _salesService.GetBuyers();
+                if (response != null)
                 {
-                    var usualClients = _dbContext.Orders
-                        .GroupBy(o => o.IdUser)
-                        .Select(g => new
-                        {
-                            TotalBuys = g.Sum(o => o.Quantity)
-                        })
-                        .OrderByDescending(p => p.TotalBuys)
-                        .Take(3)
-                        .Join(_dbContext.Orders, p => p.TotalBuys, pr => pr.IdUser, (p, pr) => pr)
-                        .ToList();
-
-                    return Ok(usualClients); 
+                    return Ok(response);
                 }
                 else
                 {
                     throw new Exception();
                 }
             }
-            catch (Exception ex)
+            catch (Exception exe)
             {
-                _logger.LogError($"Ocurrio un error en el controlador TopSales: {ex.Message}");
-                return BadRequest($"Error al intentar mostrar compradores frecuentes. Error: {ex.Message}");
+                _logger.LogError($"Ocurrio un error en el controlador SalesController: {exe.Message}");
+                return BadRequest($"Error al intentar ver compradores con mas compras. Error: {exe.Message}");
             }
         }
     }

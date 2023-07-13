@@ -11,6 +11,7 @@ namespace Interface
             builder.Services.AddScoped<ICustomAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<ISalesService, SalesService>();  
         }
     }
 }
