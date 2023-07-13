@@ -54,6 +54,11 @@ namespace Services.Services
         {
             try
             {
+                if (_dbContext.Beer.FirstOrDefault(f => f.Id == id) == null)
+                {
+                    return false;
+                }
+
                 foreach (Beer beer in _dbContext.Beer.ToList())
                 {
                     if (beer.Id == id)
