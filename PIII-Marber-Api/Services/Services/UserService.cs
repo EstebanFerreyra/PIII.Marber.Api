@@ -53,6 +53,11 @@ namespace Services.Services
         {
             try
             {
+                if (_dbContext.Users.FirstOrDefault(f => f.UserEmail == user.UserEmail) != null)
+                {
+                    return null;
+                }
+
                 _dbContext.Users.Add(new Users()
                 {
                     IdRole = _dbContext.Roles.First(f => f.Id == user.IdRole).Id,
