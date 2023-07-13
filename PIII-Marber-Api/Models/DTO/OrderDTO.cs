@@ -13,5 +13,6 @@ namespace Models.DTO
         public string BeerName { get; set; }
         public int Quantity { get; set; }
         public double SubTotal { get; set; }
+        public double Total { get; set; }
     }
 }

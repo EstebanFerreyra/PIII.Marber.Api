@@ -77,15 +77,9 @@ namespace Interface.Controllers
             }
         }
 
-        //[Authorize]
         [HttpPost("AddUser")]
         public ActionResult<UserDTO> AddUser([FromBody] UserViewModel user)
         {
-            //if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value != "superadmin")
-            //{
-            //    return Forbid();
-            //}
-
             try
             {
                 var response = _service.AddUser(user);
@@ -121,10 +115,7 @@ namespace Interface.Controllers
             {
                 if (_service.UpdateUser(user) != null)
                 {
-                    string baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
-                    string apiAndEndPointUrl = $"interface/Users/GetUserById";
-                    string locationUrl = $"{baseUrl}/{apiAndEndPointUrl}/{_service.UpdateUser(user).Id}";
-                    return Created(locationUrl, _service.UpdateUser(user));
+                    return Ok(_service.UpdateUser(user));
                 }
                 else
                 {
