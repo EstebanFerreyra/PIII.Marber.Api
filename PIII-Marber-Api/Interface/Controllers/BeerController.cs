@@ -67,7 +67,7 @@ namespace Interface.Controllers
         }
 
         [Authorize]
-        [HttpPut("ModifyPriceBeerById/{id}")]
+        [HttpPatch("ModifyPriceBeerById/{id}")]
         public ActionResult<string> ModifyPriceBeerById(int id, [FromBody] decimal newPrice)
         {
             if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "client")

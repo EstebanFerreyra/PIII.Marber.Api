@@ -73,6 +73,32 @@ namespace Interface.Controllers
             }
         }
 
+        [HttpPatch("UpdatePriceBy")]
+        public ActionResult<string> UpdatePriceById(int id, [FromBody] ModifyPriceViewModel modifyPriceViewModel)
+        {
+            if (User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value == "client")
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                if (_service.UpdatePriceById(id, modifyPriceViewModel) == true)
+                {
+                    return Ok("Orden modificada correctamente");
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception exe)
+            {
+                _logger.LogError($"Ocurrio un error en el controlador OrdersController: {exe.Message}");
+                return BadRequest($"Error al modificar una ordene. Error: {exe.Message}");
+            }
+        }
+
         [HttpDelete("DeleteOrder/{id}")]
         public ActionResult<string> DeleteOrder(int id)
         {

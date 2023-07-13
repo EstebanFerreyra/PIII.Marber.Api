@@ -81,7 +81,7 @@ namespace Services.Services
                 userDB.UserPassword = user.UserPassword;
                 //_dbContext.Users.Add(_mapper.Map<Users>(user));
                 _dbContext.SaveChanges();
-                return _mapper.Map<UserDTO>(_dbContext.Users.OrderBy(o => o.Id).Last());
+                return _mapper.Map<UserDTO>(_dbContext.Users.FirstOrDefault(f => f.Id == userDB.Id));
             }
             catch (Exception exe)
             {

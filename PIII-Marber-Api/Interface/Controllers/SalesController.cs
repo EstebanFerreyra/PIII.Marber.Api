@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.DTO;
 using Models.Models;
 using Services.IServices;
+using Services.Mappings;
 using System.Security.Claims;
 
 namespace Interface.Controllers
@@ -12,28 +15,55 @@ namespace Interface.Controllers
     {
         private readonly Marber_BBDDContext _dbContext;
         private readonly ILogger<SalesController> _logger;
+        private readonly IMapper _mapper;
 
         public SalesController(Marber_BBDDContext _context, ILogger<SalesController> logger)
         {
             _dbContext = _context;
             _logger = logger;
+            _mapper = AutoMapperConfig.Configure();
         }
 
         [HttpGet("topBeers")]
-        public ActionResult<List<SalesDTO>> GetTopSoldProducts()
+        public ActionResult<List<BeerDTO>> GetTopSoldProducts()
         {
-            var topSoldBeers = _dbContext.Orders
-                .GroupBy(o => o.IdBeer)
-                .Select(g => new
+            var listProductAndQuantity = new List<IdProductsAndQuantitySoldDTO>();
+
+            foreach (var order in _dbContext.Orders.ToList())
+            {
+                if (listProductAndQuantity.Where(w => w.IdBeer == order.IdBeer).FirstOrDefault() == null)
                 {
-                    TotalSold = g.Sum(o => o.Quantity)
-                })
-                .OrderByDescending(p => p.TotalSold)
+                    listProductAndQuantity.Add(new IdProductsAndQuantitySoldDTO
+                    {
+                        IdBeer = order.IdBeer,
+                        Quantity = order.Quantity
+                    });
+                }
+                else
+                {
+                    foreach (var prod in listProductAndQuantity)
+                    {
+                        if (prod.IdBeer == order.IdBeer)
+                        {
+                            prod.Quantity += order.Quantity;
+                        }
+                    }
+                }
+            }
+
+            var topBeers = listProductAndQuantity
+                .OrderByDescending(q => q.Quantity)
                 .Take(3)
-                .Join(_dbContext.Orders, p => p.TotalSold, pr => pr.IdBeer, (p, pr) => pr)
                 .ToList();
 
-            return Ok(topSoldBeers);
+            var list = new List<BeerDTO>();
+
+            foreach (var prod in topBeers)
+            {
+                list.Add(_mapper.Map<BeerDTO>(_dbContext.Beer.Where(w => w.Id == prod.IdBeer).FirstOrDefault()));
+            }
+
+            return Ok(list);
         }
 
         [HttpGet("topBuyers")]

@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Models.DTO
 {
-    public class SalesDTO
+    public class IdProductsAndQuantitySoldDTO
     {
-        public int BeerId{ get; set; }
+        public int IdBeer { get; set; }
         public int Quantity { get; set; }
-        public double SubTotal { get; set; }
     }
 }

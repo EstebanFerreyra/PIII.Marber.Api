@@ -37,7 +37,8 @@ namespace Services.Services
                     UserName = _dbContext.Users.Where(w => w.Id == order.IdUser).FirstOrDefault().UserName,
                     BeerName = _dbContext.Beer.Where(w => w.Id == order.IdBeer).FirstOrDefault().BeerName,
                     Quantity = order.Quantity,
-                    SubTotal = order.SubTotal * order.Quantity,
+                    SubTotal = order.SubTotal,
+                    Total = order.SubTotal * order.Quantity
                 }); 
                 };
             return ordersList;
@@ -60,6 +61,34 @@ namespace Services.Services
                 }
                 _dbContext.SaveChanges();
                 return true;
+            }
+            catch (Exception exe)
+            {
+                string error = exe.Message;
+                return false;
+            }
+        }
+
+        public bool UpdatePriceById(int id, ModifyPriceViewModel modifyPriceViewModel)
+        {
+            try
+            {
+                if (_dbContext.Orders.FirstOrDefault(w => w.Id == id) != null)
+                {
+                    foreach (var order in _dbContext.Orders.ToList())
+                    {
+                        if (order.Id == id && order.IdBeer == modifyPriceViewModel.IdBeer)
+                        {
+                            order.SubTotal = modifyPriceViewModel.Price;
+                        }
+                    }
+                    _dbContext.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    throw new Exception();
+                }
             }
             catch (Exception exe)
             {
